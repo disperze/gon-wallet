@@ -1,4 +1,8 @@
 import { AxiosInstance } from "axios";
+import { fromBase64, toHex } from "@cosmjs/encoding";
+import { QueryNFTRequest, QueryNFTResponse, QueryNFTsOfOwnerRequest, QueryNFTsOfOwnerResponse } from "../../proto/nft/query";
+import Long from "long";
+import { PageRequest } from "cosmjs-types/cosmos/base/query/v1beta1/pagination";
 
 export interface CollectionsResponse {
   owner:      Owner;
@@ -21,31 +25,65 @@ export interface Pagination {
 }
 
 export interface NFTResponse {
-  nft: NftINfo;
+  nft: Nft;
 }
 
-export interface NftINfo {
+export interface Nft {
+  cid:      string;
   id:       string;
   name:     string;
   uri:      string;
   data:     string;
   owner:    string;
-  uri_hash: string;
+  uriHash: string;
 }
 
 export class IrisNFTClient {
   constructor(private instance: AxiosInstance) {
   }
 
-  async getCollections(address: string): Promise<CollectionsResponse> {
-      const res = await this.instance.get(`/irismod/nft/nfts?owner=${address}`);
+  async getCollections(address: string, maxItems: number): Promise<QueryNFTsOfOwnerResponse> {
+    const data = QueryNFTsOfOwnerRequest.encode({
+      denomId: "",
+      owner: address,
+      pagination: PageRequest.fromJSON({
+        countTotal: false,
+        limit: Long.fromNumber(maxItems),
+      })
+    }).finish();
 
-      return res.data;
+    const res = await this.callRpc("/irismod.nft.Query/NFTsOfOwner", data)
+
+    return QueryNFTsOfOwnerResponse.decode(res);
   }
 
-  async getNFT(denom: string, tokenId: string): Promise<NftINfo> {
-    const res = await this.instance.get(`/irismod/nft/nfts/${denom}/${tokenId}`);
+  async getNFT(denom: string, tokenId: string): Promise<Nft> {
+    const data = QueryNFTRequest.encode({
+      denomId: denom,
+      tokenId: tokenId
+    }).finish();
 
-    return res.data.nft;
+    const res = await this.callRpc("/irismod.nft.Query/NFT", data)
+
+    const nft = QueryNFTResponse.decode(res).nft!;
+    return {
+      ...nft,
+      cid: denom
+    };
+  }
+
+  async callRpc(path: string, data: Uint8Array) {
+    const payload = {
+      jsonrpc:"2.0",
+      id:-1,
+      method:"abci_query",
+      params: {
+        path: path,
+        data: toHex(data),
+        prove:false
+      }
+    }
+    return await this.instance.post("", payload)
+      .then((res) => fromBase64(res.data.result.response.value))
   }
 }
