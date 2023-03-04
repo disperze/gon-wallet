@@ -21,6 +21,7 @@ export interface AppConfig {
   readonly codeId: number;
   readonly contract: string;
   readonly marketContract: string;
+  readonly keplrFeatures: string[];
 }
 
 export interface NetworkConfigs {
@@ -64,6 +65,6 @@ export function configKeplr(config: AppConfig) {
     },
     bip44: { coinType: 118 },
     coinType: 118,
-    features: ["stargate", 'ibc-transfer', 'cosmwasm']
+    features: config.keplrFeatures,
   };
 }

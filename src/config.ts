@@ -1,5 +1,5 @@
 import { AppConfig, getAppConfig, NetworkConfigs } from "./App/services/config/network";
-import junoLogo from "./App/assets/tokens/juno.svg";
+import irisToken from "./App/assets/tokens/iris.svg";
 
 const local: AppConfig = {
   chainId: "testing",
@@ -15,7 +15,8 @@ const local: AppConfig = {
   gasPrice: 0.025,
   codeId: 4,
   contract: "",
-  marketContract: ""
+  marketContract: "",
+  keplrFeatures: ['ibc-transfer', 'cosmwasm']
 };
 
 const testnet: AppConfig = {
@@ -32,7 +33,8 @@ const testnet: AppConfig = {
   gasPrice: 0.025,
   codeId: 4,
   contract: "",
-  marketContract: ""
+  marketContract: "",
+  keplrFeatures: ['ibc-transfer']
 };
 
 export interface Token {
@@ -47,7 +49,7 @@ export const coins: Token[] = [
     denom: "uiris",
     name: "IRIS",
     decimals: 6,
-    logo: junoLogo,
+    logo: irisToken,
   },
 ];
 
