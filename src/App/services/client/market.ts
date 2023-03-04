@@ -69,12 +69,12 @@ export const Market = (contractAddress: string): MarketContract => {
 
   const useTx = (client: SigningCosmWasmClient): MarketTxInstance => {
     const buy = async (sender: string, offerId: string, price: Coin): Promise<string> => {
-      const result = await client.execute(sender, contractAddress, { buy: { offering_id: offerId } }, undefined, [price]);
+      const result = await client.execute(sender, contractAddress, { buy: { offering_id: offerId } }, 1.2, undefined, [price]);
       return result.transactionHash;
     };
 
     const withdraw = async (sender: string, offerId: string): Promise<string> => {
-      const result = await client.execute(sender, contractAddress, { withdraw_nft: { offering_id: offerId } });
+      const result = await client.execute(sender, contractAddress, { withdraw_nft: { offering_id: offerId } }, 1.2);
       return result.transactionHash;
     };
 

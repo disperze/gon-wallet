@@ -120,12 +120,12 @@ export const CW721 = (contractAddress: string): CW721Contract => {
 
   const useTx = (client: SigningCosmWasmClient): CW721TxInstance => {
     const mint = async (sender: string, nft: NftMsg): Promise<string> => {
-      const result = await client.execute(sender, contractAddress, { mint: nft });
+      const result = await client.execute(sender, contractAddress, { mint: nft }, 1.2);
       return result.transactionHash;
     };
 
     const transfer = async (sender: string, recipient: string, tokenId: string): Promise<string> => {
-      const result = await client.execute(sender, contractAddress, { transfer_nft: { recipient, token_id: tokenId } });
+      const result = await client.execute(sender, contractAddress, { transfer_nft: { recipient, token_id: tokenId } }, 1.2);
       return result.transactionHash;
     };
 
@@ -136,7 +136,7 @@ export const CW721 = (contractAddress: string): CW721Contract => {
           token_id: tokenId,
           msg: btoa(JSON.stringify(msg))
         }
-      });
+      }, 1.2);
       return result.transactionHash;
     };
 
