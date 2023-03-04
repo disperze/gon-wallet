@@ -34,7 +34,7 @@ const maxItemsPerPage = 15;
 export const Account = () => {
   const { user } = useParams<AccountParams>();
 
-  const { nftClient, address } = useSdk();
+  const { nftClient } = useSdk();
   const [nfts, setNfts] = useState<NftInfo[]>([]);
 
   const getNftsInfo = async (ids: IDCollection[], client: IrisNFTClient) => {
@@ -65,12 +65,11 @@ export const Account = () => {
 
       const result = await nftClient.getCollections(user, maxItemsPerPage);
       const nfts = await getNftsInfo(result.owner!.idCollections, nftClient);
-      console.log(nfts);
       setNfts(nfts);
     })();
   }, [nftClient, user]);
 
-  const getNftPath = (nftId: string) => `${address === user ? "/account" : ""}/token/${nftId}`;
+  const getNftPath = (cid?: string, nftId?: string) => `/tokens?cid=${cid}&nid=${nftId}`;
 
   return (
     <Box m={5}>
@@ -102,7 +101,7 @@ export const Account = () => {
             isLazy
             colorScheme="cyan">
             <TabList>
-              <Tab>Owned</Tab>
+              <Tab>My NFTs</Tab>
             </TabList>
 
             <TabPanels>
@@ -114,7 +113,7 @@ export const Account = () => {
                       _hover={{
                         transform: "scale(1.05)"
                       }}>
-                      <LinkOverlay as={ReactRouterLink} to={getNftPath(nft.tokenId)}>
+                      <LinkOverlay as={ReactRouterLink} to={getNftPath(nft.denom, nft.tokenId)}>
                         <NftCard nft={nft} />
                       </LinkOverlay>
                     </LinkBox>
