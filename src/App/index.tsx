@@ -10,23 +10,36 @@ import {
   ChakraProvider,
 } from "@chakra-ui/react"
 import {
- HomePage,
+  Account,
+  AccountToken,
+  Landing,
 } from "./pages"
 import { SdkProvider } from "./services/client/wallet"
 import { config } from "../config";
 import theme from "./theme"
+import { Navbar } from "./components"
 
 export const App = () => (
   <ChakraProvider theme={theme}>
     <SdkProvider config={config}>
 
         <Router>
-          <Route component={() => <Redirect to="/" />} />
+          <Navbar />
+          <Route
+            exact
+            path="/tokens"
+            component={AccountToken}
+          />
+          <Route
+            path="/account/:user"
+            component={Account}
+          />
           <Route
             exact
             path="/"
-            component={HomePage}
+            component={Landing}
           />
+          {/* <Route component={() => <Redirect to="/" />} /> */}
           </Router>
     </SdkProvider>
   </ChakraProvider>
