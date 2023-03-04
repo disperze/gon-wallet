@@ -1,6 +1,5 @@
 import { AppConfig, getAppConfig, NetworkConfigs } from "./App/services/config/network";
 import junoLogo from "./App/assets/tokens/juno.svg";
-import croLogo from "./App/assets/tokens/cro.png";
 
 const local: AppConfig = {
   chainId: "testing",
@@ -19,7 +18,7 @@ const local: AppConfig = {
   marketContract: ""
 };
 
-const irisnet: AppConfig = {
+const testnet: AppConfig = {
   chainId: "gon-irishub-1",
   chainName: "IRIS GoN",
   addressPrefix: "iaa",
@@ -35,24 +34,6 @@ const irisnet: AppConfig = {
   contract: "",
   marketContract: ""
 };
-
-const testnet: AppConfig = {
-  chainId: "lucina",
-  chainName: "Juno Tesnet",
-  addressPrefix: "juno",
-  rpcUrl: "https://rpc.juno.giansalex.dev",
-  httpUrl: "https://lcd.juno.giansalex.dev",
-  token: {
-    coinDenom: "JUNO",
-    coinDecimals: 6,
-    coinMinimalDenom: "ujuno"
-  },
-  gasPrice: 0.025,
-  codeId: 4,
-  contract: "juno1gnc0533drmdq2u9d70z0fyr9jg74dd2av9gtxw",
-  marketContract: "juno16te3h0x8gnwhlunhh383j2jqsv4q556x22gtj0"
-};
-
 
 export interface Token {
   readonly denom: string;
@@ -70,5 +51,5 @@ export const coins: Token[] = [
   },
 ];
 
-const configs: NetworkConfigs = { local, testnet: irisnet };
+const configs: NetworkConfigs = { local, testnet };
 export const config = getAppConfig(configs);
