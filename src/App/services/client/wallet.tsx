@@ -5,6 +5,8 @@ import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AppConfig } from "../config/network";
 import { createClient, createSimpleClient } from "./sdk";
+import { IrisNFTClient } from "./iris_nft";
+import axios from "axios";
 
 interface CosmWasmContextType {
   readonly initialized: boolean;
@@ -19,6 +21,7 @@ interface CosmWasmContextType {
   readonly getSigner: () => OfflineSigner | undefined;
   readonly changeSigner: (newSigner: OfflineSigner) => void;
   readonly getSignClient: () => SigningCosmWasmClient | undefined;
+  readonly nftClient: IrisNFTClient | undefined;
 }
 
 function throwNotInitialized(): any {
@@ -38,6 +41,7 @@ const defaultContext: CosmWasmContextType = {
   getSigner: () => undefined,
   changeSigner: throwNotInitialized,
   getSignClient: () => undefined,
+  nftClient: undefined,
 };
 
 const CosmWasmContext = React.createContext<CosmWasmContextType>(defaultContext);
@@ -52,6 +56,7 @@ export function SdkProvider({ config: configProp, children }: SdkProviderProps):
   const [config, setConfig] = useState(configProp);
   const [signer, setSigner] = useState<OfflineSigner>();
   const [client, setClient] = useState<CosmWasmClient>();
+  const [nftClient, setNftClient] = useState<IrisNFTClient>();
   const [signClient, setSignClient] = useState<SigningCosmWasmClient>();
 
   const contextWithInit = useMemo(() => ({ ...defaultContext, init: setSigner }), []);
@@ -60,6 +65,7 @@ export function SdkProvider({ config: configProp, children }: SdkProviderProps):
   const clear = useCallback(() => {
     setValue({ ...contextWithInit });
     setClient(undefined);
+    setNftClient(undefined);
     setSigner(undefined);
     setConfig(configProp);
   }, [contextWithInit, configProp]);
@@ -81,7 +87,14 @@ export function SdkProvider({ config: configProp, children }: SdkProviderProps):
       // TODO: Catch errors
       const client = await createSimpleClient(config);
       setClient(client);
-      setValue({ ...contextWithInit, client })
+
+      const instance = axios.create({
+        baseURL: config.rpcUrl,
+        timeout: 15000,
+      });
+      const nftClient = new IrisNFTClient(instance);
+      setNftClient(nftClient);
+      setValue({ ...contextWithInit, client, nftClient })
     })();
   }, [contextWithInit, config]);
 
@@ -96,7 +109,7 @@ export function SdkProvider({ config: configProp, children }: SdkProviderProps):
   }, [signer, config]);
 
   useEffect(() => {
-    if (!signer || !client || !signClient) return;
+    if (!signer || !client || !nftClient || !signClient) return;
 
     const balance: Coin[] = [];
 
@@ -118,9 +131,10 @@ export function SdkProvider({ config: configProp, children }: SdkProviderProps):
         getSigner: () => signer,
         changeSigner: setSigner,
         getSignClient: () => signClient,
+        nftClient,
       });
     })();
-  }, [signClient, signer, clear, client, config, refreshBalance]);
+  }, [signClient, signer, clear, nftClient, client, config, refreshBalance]);
 
   return <CosmWasmContext.Provider value={value}>{children}</CosmWasmContext.Provider>;
 }
