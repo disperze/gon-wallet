@@ -36,6 +36,7 @@ import {
 } from "@chakra-ui/react";
 import {
   formatAddress,
+  normalizeImg,
   useSdk,
 } from "../../services";
 import userLogo from "../../assets/user-default.svg";
@@ -61,10 +62,6 @@ export const AccountToken = () => {
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [recipient, setRecipient] = useState<string>();
-
-    const normalizeImg = (uri: string) => {
-      return uri?.endsWith(".png") || uri?.endsWith(".jpg") || uri?.endsWith(".jpeg") ? uri : "";
-    };
 
     const loadData = useCallback(async () => {
       if (!nftClient) return;

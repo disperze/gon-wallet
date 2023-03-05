@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import {
   NftInfo,
+  normalizeImg,
   useSdk,
 } from "../../services";
 import { NftCard } from "../../components";
@@ -50,10 +51,10 @@ export const Account = () => {
       return {
         denom: nft.cid,
         tokenId: nft.id,
-        user: 'unknown',
+        user: nft.owner,
         title: nft.name,
         price: 'Not listed',
-        image: nft.uri?.endsWith(".png") ? nft.uri : "",
+        image: normalizeImg(nft.uri),
         total: 1
       };
     });

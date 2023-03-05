@@ -29,3 +29,7 @@ export function toMinDenom(amount: number, denom: string): string {
   const coin = getTokenConfig(denom)!;
   return Math.ceil(amount * Math.pow(10, coin.decimals)).toString();
 }
+
+export function normalizeImg(uri: string): string {
+  return uri?.endsWith(".png") || uri?.endsWith(".jpg") || uri?.endsWith(".jpeg") ? uri : "";
+}
