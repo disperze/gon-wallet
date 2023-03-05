@@ -13,9 +13,6 @@ const local: AppConfig = {
     coinMinimalDenom: "ustake"
   },
   gasPrice: 0.025,
-  codeId: 4,
-  contract: "",
-  marketContract: "",
   keplrFeatures: ['ibc-transfer', 'cosmwasm'],
   channels: [],
 };
@@ -32,13 +29,22 @@ const testnet: AppConfig = {
     coinMinimalDenom: "uiris"
   },
   gasPrice: 0.025,
-  codeId: 4,
-  contract: "",
-  marketContract: "",
   keplrFeatures: ['ibc-transfer'],
   channels: [{
     id: "juno",
     channel: "channel-24",
+    port: "nft-transfer",
+  }, {
+    id: "stars",
+    channel: "channel-22",
+    port: "nft-transfer",
+  }, {
+    id: "uptick",
+    channel: "channel-17",
+    port: "nft-transfer",
+  }, {
+    id: "omniflix",
+    channel: "channel-0",
     port: "nft-transfer",
   }],
 };

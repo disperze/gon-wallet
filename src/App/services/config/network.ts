@@ -24,9 +24,9 @@ export interface AppConfig {
   readonly httpUrl: string;
   readonly token: Currency;
   readonly gasPrice: number;
-  readonly codeId: number;
-  readonly contract: string;
-  readonly marketContract: string;
+  readonly codeId?: number;
+  readonly contract?: string;
+  readonly marketContract?: string;
   readonly keplrFeatures: string[];
   readonly channels: Channel[];
 }
