@@ -25,7 +25,6 @@ import {
   Market,
   NftInfoResponse,
   OfferResponse,
-  publicIpfsUrl,
   useSdk,
 } from "../../services";
 import { config } from "../../../config";
@@ -54,7 +53,7 @@ export const Detail = () => {
         const marketContract = Market(config.marketContract).use(client);
 
         const result = await contract.nftInfo(id);
-        result.image = publicIpfsUrl(result.image);
+        result.image = result.image;
         const offer = await marketContract.offer(config.contract, id);
 
         setOffer(offer);

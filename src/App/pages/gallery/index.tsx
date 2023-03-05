@@ -10,7 +10,6 @@ import {
   NftInfoResponse,
   Market,
   NftInfo,
-  publicIpfsUrl,
   OfferResponse,
   useSdk,
 } from "../../services";
@@ -49,7 +48,7 @@ export const Gallery = () => {
         user: 'unknown',
         title: nft.name,
         price: off ? formatPrice(off.list_price): "Not listed",
-        image: publicIpfsUrl(nft.image),
+        image: nft.image,
         total: 1
       };
     });
