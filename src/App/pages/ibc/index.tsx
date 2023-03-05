@@ -166,7 +166,7 @@ export const IBCTransfer = () => {
         setLoading.off();
         toast({
           title: `IBC Completed`,
-          description: (<TransactionLink tx={tx.events['tx.hash'][0]} />),
+          description: (<TransactionLink tx={tx.events['tx.hash'][0]} explorerUrl={dstNetwork.explorerTx} />),
           status: "success",
           position: "bottom-right",
           isClosable: true,
