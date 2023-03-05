@@ -6,6 +6,7 @@ import { MsgTransfer } from "./../../proto/nft_transfer/tx";
 
 import { AppConfig } from "../config/network";
 import { MsgIssueDenom, MsgMintNFT } from "../../proto/nft/tx";
+import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 
 export type WalletLoader = (chainId: string, addressPrefix?: string) => Promise<OfflineSigner>;
 
@@ -40,8 +41,13 @@ function createDefaultRegistry() {
     ['/ibc.applications.nft_transfer.v1.MsgTransfer', MsgTransfer],
   ];
 
+  const wasmTypes: ReadonlyArray<[string, GeneratedType]> = [
+    ['/cosmwasm.wasm.v1.MsgExecuteContract', MsgExecuteContract],
+  ];
+
   return new Registry([
     ...defaultRegistryTypes,
+    ...wasmTypes,
     ...nftTypes,
   ])
 }
