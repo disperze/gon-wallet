@@ -29,7 +29,7 @@ interface AccountParams {
   readonly user: string;
 }
 
-const maxItemsPerPage = 15;
+const maxItemsPerPage = 100;
 
 export const Account = () => {
   const { user } = useParams<AccountParams>();
