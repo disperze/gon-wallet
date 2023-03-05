@@ -157,7 +157,7 @@ export function AccountButton(): JSX.Element {
         </PopoverBody>
         <PopoverFooter p={0}>
           <Box px={8} pb={6} pt={3}>
-            <MenuLink href={`/account/${sdk.address}`} label="My Items" />
+            <MenuLink href={`/account/${sdk.address}`} label="My NFTs" />
           </Box>
         </PopoverFooter>
       </PopoverContent>

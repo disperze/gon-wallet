@@ -26,14 +26,14 @@ export function Navbar(): JSX.Element {
   return (
     <Box>
       <Flex
-        bg={useColorModeValue('white.900', 'cyan.900')}
-        color={useColorModeValue('white.200', 'white.200')}
+        bg={useColorModeValue('white', 'gray.800')}
+        color={useColorModeValue('gray.600', 'white')}
         minH={'60px'}
         py={{ base: 2 }}
         px={{ base: 4 }}
         borderBottom={1}
         borderStyle={'solid'}
-        borderBottomColor={useColorModeValue('cyan.900', 'white.200')}
+        borderBottomColor={useColorModeValue('pink.400', 'gray.300')}
         align={'center'}>
         <Flex
           flex={{ base: 0, md: 'auto' }}
@@ -55,7 +55,14 @@ export function Navbar(): JSX.Element {
             _hover={{
               textDecoration: 'none',
             }}>
-             GoN
+            <Text
+              bgGradient='linear(to-l, #295ccd, #00c4ff)'
+              bgClip='text'
+              fontSize='2xl'
+              fontWeight='extrabold'
+            >
+              GoN
+            </Text>
           </Link>
         </Flex>
 
@@ -80,9 +87,9 @@ export function Navbar(): JSX.Element {
 const DesktopNav = () => {
   return (
     <Stack direction={'row'} spacing={6} display={{ base: 'none', md: 'inline-flex' }}>
-      <Link
+      {/* <Link
         as={ReactRouterLink}
-        to="/gallery"
+        to="/"
         p={1.5}
         fontSize={'sm'}
         fontFamily={'mono'}
@@ -91,7 +98,7 @@ const DesktopNav = () => {
           color: useColorModeValue('light', 'dark'),
         }}>
         Explore
-      </Link>
+      </Link> */}
       <Button
         as={ReactRouterLink}
         to="/create"
@@ -105,7 +112,7 @@ const DesktopNav = () => {
         _hover={{
           bg: 'gray.500',
         }}>
-        Create
+        Deposit
       </Button>
     </Stack>
   );
