@@ -1,7 +1,6 @@
 import * as React from "react"
 
 import {
-  Redirect,
   Route,
   BrowserRouter as Router,
 } from "react-router-dom"
@@ -12,7 +11,7 @@ import {
 import {
   Account,
   AccountToken,
-  Landing,
+  HomePage,
 } from "./pages"
 import { SdkProvider } from "./services/client/wallet"
 import { config } from "../config";
@@ -37,7 +36,7 @@ export const App = () => (
           <Route
             exact
             path="/"
-            component={Landing}
+            component={HomePage}
           />
           {/* <Route component={() => <Redirect to="/" />} /> */}
           </Router>
