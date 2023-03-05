@@ -145,6 +145,22 @@ const omniflix: AppConfig = {
   }],
 };
 
+const uptick: AppConfig = {
+  chainId: "uptick_7000-2",
+  chainName: "Uptick GoN",
+  addressPrefix: "uptick",
+  rpcUrl: "http://52.220.252.160:26657",
+  httpUrl: "http://52.220.252.160:1317",
+  token: {
+    coinDenom: "UPTICK",
+    coinDecimals: 18,
+    coinMinimalDenom: "auptick"
+  },
+  gasPrice: 0.025,
+  keplrFeatures: ['ibc-transfer', 'eth-address-gen', 'eth-key-sign',],
+  channels: [],
+};
+
 export interface Token {
   readonly denom: string;
   readonly name: string;
@@ -161,5 +177,5 @@ export const coins: Token[] = [
   },
 ];
 
-export const networks: NetworkConfigs = { local, testnet, iaa: testnet, juno, stars, omniflix };
+export const networks: NetworkConfigs = { local, testnet, iaa: testnet, juno, stars, omniflix, uptick };
 export const config = getAppConfig(networks);
