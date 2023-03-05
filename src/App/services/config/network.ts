@@ -10,6 +10,12 @@ export interface Currency {
   readonly coinImageUrl?: string;
 }
 
+export interface Channel {
+  readonly id: string;
+  readonly channel: string;
+  readonly port: string;
+}
+
 export interface AppConfig {
   readonly chainId: string;
   readonly chainName: string;
@@ -22,6 +28,7 @@ export interface AppConfig {
   readonly contract: string;
   readonly marketContract: string;
   readonly keplrFeatures: string[];
+  readonly channels: Channel[];
 }
 
 export interface NetworkConfigs {

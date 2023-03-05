@@ -16,7 +16,8 @@ const local: AppConfig = {
   codeId: 4,
   contract: "",
   marketContract: "",
-  keplrFeatures: ['ibc-transfer', 'cosmwasm']
+  keplrFeatures: ['ibc-transfer', 'cosmwasm'],
+  channels: [],
 };
 
 const testnet: AppConfig = {
@@ -34,7 +35,12 @@ const testnet: AppConfig = {
   codeId: 4,
   contract: "",
   marketContract: "",
-  keplrFeatures: ['ibc-transfer']
+  keplrFeatures: ['ibc-transfer'],
+  channels: [{
+    id: "juno",
+    channel: "channel-24",
+    port: "nft-transfer",
+  }],
 };
 
 export interface Token {
