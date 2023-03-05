@@ -29,6 +29,7 @@ export interface AppConfig {
   readonly marketContract?: string;
   readonly keplrFeatures: string[];
   readonly channels: Channel[];
+  readonly explorerTx?: string;
 }
 
 export interface NetworkConfigs {

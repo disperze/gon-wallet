@@ -23,6 +23,7 @@ const testnet: AppConfig = {
   addressPrefix: "iaa",
   rpcUrl: "http://34.80.93.133:26657",
   httpUrl: "http://34.80.93.133:1317",
+  explorerTx: 'https://gon.ping.pub/iris/tx/',
   token: {
     coinDenom: "IRIS",
     coinDecimals: 6,
@@ -55,6 +56,7 @@ const juno: AppConfig = {
   addressPrefix: "juno",
   rpcUrl: "https://rpc.uni.junonetwork.io",
   httpUrl: "https://api.uni.junonetwork.io",
+  explorerTx: 'https://blueprints.juno.giansalex.dev/#/transactions/',
   token: {
     coinDenom: "JUNO",
     coinDecimals: 6,
@@ -87,6 +89,7 @@ const stars: AppConfig = {
   addressPrefix: "stars",
   rpcUrl: "https://rpc.elgafar-1.stargaze-apis.com",
   httpUrl: "https://rest.elgafar-1.stargaze-apis.com",
+  explorerTx: 'https://gon.ping.pub/stargaze/tx/',
   token: {
     coinDenom: "STARS",
     coinDecimals: 6,
@@ -119,6 +122,7 @@ const omniflix: AppConfig = {
   addressPrefix: "omniflix",
   rpcUrl: "http://65.21.93.56:26657",
   httpUrl: "http://65.21.93.56:1317",
+  explorerTx: 'https://gon.ping.pub/omniflix/tx/',
   token: {
     coinDenom: "FLIX",
     coinDecimals: 6,
@@ -151,6 +155,7 @@ const uptick: AppConfig = {
   addressPrefix: "uptick",
   rpcUrl: "http://52.220.252.160:26657",
   httpUrl: "http://52.220.252.160:1317",
+  explorerTx: 'http://52.220.252.160:26657/tx?hash=0x',
   token: {
     coinDenom: "UPTICK",
     coinDecimals: 18,
