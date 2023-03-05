@@ -17,8 +17,6 @@ import { Bech32, toHex } from "@cosmjs/encoding";
 import { FileUpload, TransactionLink } from "../../components"
 import {
   CW721,
-  unSanitizeIpfsUrl,
-  uploadFile,
   useSdk,
 } from "../../services";
 import { config } from "../../../config";
@@ -175,3 +173,11 @@ export const Create = () => {
   </Flex>
   );
 }
+function uploadFile(arg0: File) {
+  throw new Error("Function not implemented.");
+}
+
+function unSanitizeIpfsUrl(fileHash: void) {
+  throw new Error("Function not implemented.");
+}
+

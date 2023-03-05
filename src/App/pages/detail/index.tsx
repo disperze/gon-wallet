@@ -53,7 +53,6 @@ export const Detail = () => {
         const marketContract = Market(config.marketContract).use(client);
 
         const result = await contract.nftInfo(id);
-        result.image = result.image;
         const offer = await marketContract.offer(config.contract, id);
 
         setOffer(offer);

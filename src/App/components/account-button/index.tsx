@@ -20,8 +20,10 @@ import {
   useDisclosure,
   PopoverFooter,
   PopoverBody,
+  Divider,
 } from '@chakra-ui/react';
 import { MdAccountBalanceWallet } from "react-icons/md";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useSdk } from "../../services/client/wallet";
 import { config } from "../../../config";
 import {
@@ -74,6 +76,27 @@ export function AccountButton(): JSX.Element {
       Connect wallet
     </Button>
   );
+
+  const SourceCodeLink = (props: any) => {
+    return (
+      <Box
+        p={1}
+        rounded={6}
+        _hover={{
+          bg: useColorModeValue('gray.500', 'cyan.900'),
+        }}>
+        <Link
+          fontSize={'md'}
+          href={props.href}
+          isExternal
+          _hover={{
+            textDecoration: 'none',
+          }}>
+          {props.label} <ExternalLinkIcon mx='2px' />
+        </Link>
+      </Box>
+    );
+  };
 
   const MenuLink = (props: any) => {
     return (
@@ -144,7 +167,7 @@ export function AccountButton(): JSX.Element {
           >
             <Box>
               <Badge fontSize="0.6rem" variant="outline" colorScheme="orange">
-                Lucina Testnet
+                GoN Testnet
               </Badge>
               <Text fontSize="md" fontWeight="semibold">{formatAddress(sdk.address)}</Text>
             </Box>
@@ -158,6 +181,12 @@ export function AccountButton(): JSX.Element {
         <PopoverFooter p={0}>
           <Box px={8} pb={6} pt={3}>
             <MenuLink href={`/account/${sdk.address}`} label="My NFTs" />
+          </Box>
+        </PopoverFooter>
+        <Divider />
+        <PopoverFooter p={0}>
+          <Box px={8} pb={6} pt={3}>
+            <SourceCodeLink href={`https://github.com/disperze/gon-wallet`} label="Source code" />
           </Box>
         </PopoverFooter>
       </PopoverContent>
