@@ -11,7 +11,7 @@ interface TransactionLinkProps {
 export function TransactionLink({ tx, maxLength = 20 }: TransactionLinkProps): JSX.Element {
   return (
     <Link
-      href={`https://blueprints.juno.giansalex.dev/#/transactions/${tx}`}
+      href={`https://gon.ping.pub/iris/tx/${tx}`}
       isExternal>
         {ellideMiddle(tx, maxLength || 999)} <ExternalLinkIcon mx="2px" />
     </Link>
