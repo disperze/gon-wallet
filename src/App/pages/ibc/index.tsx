@@ -292,7 +292,7 @@ export const IBCTransfer = () => {
 
       {resultClass && <Box>
         <Box mt={6} mb={10}>
-          <Heading as="h3" fontSize="3xl">NFT-Transfer Result</Heading>
+          <Heading as="h3" fontSize="3xl">Remote Result</Heading>
           <Text fontSize="md" mt={2}>
             <strong>{resultClass?.startsWith("ibc/") ? "ClassTrace" : "Contract"}:</strong>&nbsp;
             {resultClass}
