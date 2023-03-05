@@ -96,7 +96,7 @@ const stars: AppConfig = {
   keplrFeatures: ['ibc-transfer', 'cosmwasm'],
   channels: [{
     id: "iaa",
-    channel: "channel-208",
+    channel: "channel-207",
     port: "wasm.stars1ve46fjrhcrum94c7d8yc2wsdz8cpuw73503e8qn9r44spr6dw0lsvmvtqh",
   }, {
     id: "juno",
