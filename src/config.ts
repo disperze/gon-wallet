@@ -125,7 +125,7 @@ const omniflix: AppConfig = {
     coinMinimalDenom: "uflix"
   },
   gasPrice: 0.025,
-  keplrFeatures: ['ibc-transfer', 'cosmwasm'],
+  keplrFeatures: ['ibc-transfer'],
   channels: [{
     id: "iaa",
     channel: "channel-24",
@@ -161,5 +161,5 @@ export const coins: Token[] = [
   },
 ];
 
-export const networks: NetworkConfigs = { local, testnet, iris: testnet, juno, stars, omniflix };
+export const networks: NetworkConfigs = { local, testnet, iaa: testnet, juno, stars, omniflix };
 export const config = getAppConfig(networks);
