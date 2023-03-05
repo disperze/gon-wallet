@@ -5,6 +5,7 @@ import { GeneratedType, OfflineSigner, Registry } from "@cosmjs/proto-signing";
 import { MsgTransfer } from "./../../proto/nft_transfer/tx";
 
 import { AppConfig } from "../config/network";
+import { MsgIssueDenom, MsgMintNFT } from "../../proto/nft/tx";
 
 export type WalletLoader = (chainId: string, addressPrefix?: string) => Promise<OfflineSigner>;
 
@@ -34,6 +35,8 @@ export function createSimpleClient(config: AppConfig): Promise<CosmWasmClient> {
 
 function createDefaultRegistry() {
   const nftTypes: ReadonlyArray<[string, GeneratedType]> = [
+    ['/irismod.nft.MsgIssueDenom', MsgIssueDenom],
+    ['/irismod.nft.MsgMintNFT', MsgMintNFT],
     ['/ibc.applications.nft_transfer.v1.MsgTransfer', MsgTransfer],
   ];
 
