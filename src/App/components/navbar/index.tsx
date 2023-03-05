@@ -60,7 +60,7 @@ export function Navbar(): JSX.Element {
               fontSize='2xl'
               fontWeight='extrabold'
             >
-              GoN
+              Game of NFTs
             </Text>
           </Link>
         </Flex>
@@ -112,7 +112,7 @@ const DesktopNav = () => {
       </Link>
       <Button
         as={ReactRouterLink}
-        to="/create"
+        to="/ibc-transfer"
         verticalAlign={"middle"}
         height="var(--chakra-sizes-8)"
         fontSize={'sm'}
@@ -123,7 +123,7 @@ const DesktopNav = () => {
         _hover={{
           bg: 'gray.500',
         }}>
-        Deposit
+        IBC
       </Button>
     </Stack>
   );
