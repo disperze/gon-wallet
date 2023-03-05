@@ -12,6 +12,7 @@ import {
   Select,
   useBoolean,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import { TransactionLink } from "../../components"
 import {
@@ -20,7 +21,9 @@ import {
   configKeplr,
   createClient,
   loadKeplrWallet,
+  mapEventAttributes,
   useSdk,
+  waitingIbcTransfer,
 } from "../../services";
 import { MsgTransfer } from "../../proto/nft_transfer/tx";
 import { fromBech32, toUtf8, toBase64 } from "@cosmjs/encoding";
@@ -49,6 +52,7 @@ export const IBCTransfer = () => {
   const [tokenId, setTokenId]= useState<string>(query.get("nid") ?? "");
   const [origin, setOrigin]= useState<string>();
   const [recipient, setRecipient]= useState<string>();
+  const [resultClass, setResultClass]= useState<string>();
   const [loading, setLoading] = useBoolean();
 
   function resetForm() {
@@ -80,6 +84,7 @@ export const IBCTransfer = () => {
     setLoading.on();
 
     try {
+      setResultClass("");
       const network = networks[origin];
       const { prefix } = fromBech32(recipient);
       const ibcParams = network.channels?.find((c) => c.id === prefix)
@@ -93,7 +98,7 @@ export const IBCTransfer = () => {
       const timeout = d.getTime() * 1000000; // nanoseconds
 
       let client, sender;
-      if (origin === "iris") {
+      if (origin === "iaa") {
         sender = address;
         client = getSignClient()!;
       } else {
@@ -153,6 +158,34 @@ export const IBCTransfer = () => {
         isClosable: true,
       });
 
+      const packetAttrs = mapEventAttributes(res.events, "send_packet");
+      const query =`recv_packet.packet_dst_channel='${packetAttrs['packet_dst_channel']}' AND recv_packet.packet_sequence='${packetAttrs['packet_sequence']}'`;
+      const dstNetwork = networks[prefix];
+      waitingIbcTransfer(dstNetwork.rpcUrl, query, sender)
+      .then((tx: any) => {
+        setLoading.off();
+        toast({
+          title: `IBC Completed`,
+          description: (<TransactionLink tx={tx.events['tx.hash'][0]} />),
+          status: "success",
+          position: "bottom-right",
+          isClosable: true,
+        });
+
+        if (dstNetwork.keplrFeatures.includes("cosmwasm")) {
+          const events = tx.data.value.TxResult.result.events;
+          const minterB64 = btoa('minter')
+          const wasm = events.find((e: any) => e.type === "wasm" && e.attributes.some((a: any) => a.key === minterB64))
+          if (!wasm) return;
+          const cw721Contract = atob(wasm.attributes.find((a: any) => a.key === btoa('_contract_address')).value)
+          setResultClass(cw721Contract);
+        } else {
+          const traceEvent = tx.events['class_trace.classID'];
+          if (!traceEvent) return;
+          setResultClass(traceEvent[0]);
+        }
+      });
+
       resetForm();
     } catch (error) {
       toast({
@@ -162,8 +195,6 @@ export const IBCTransfer = () => {
         position: "bottom-right",
         isClosable: true,
       });
-    }
-    finally {
       setLoading.off();
     }
   }
@@ -187,8 +218,10 @@ export const IBCTransfer = () => {
               fontFamily="mono"
               fontWeight="semibold"
             >Chain</FormLabel>
-            <Select placeholder='Select network' onChange={e => setOrigin(e.target.value)} >
-              <option value='iris'>IRIS</option>
+            <Select placeholder="Select Network"
+              value={origin}
+              onChange={e => setOrigin(e.target.value)} >
+              <option value='iaa'>IRIS</option>
               <option value='juno'>JUNO</option>
               <option value='stars'>STARGAZE</option>
               <option value='omniflix'>Omniflix</option>
@@ -257,6 +290,15 @@ export const IBCTransfer = () => {
         </Box>
       </Box>
 
+      {resultClass && <Box>
+        <Box mt={6} mb={10}>
+          <Heading as="h3" fontSize="3xl">NFT-Transfer Result</Heading>
+          <Text fontSize="md" mt={2}>
+            <strong>{resultClass?.startsWith("ibc/") ? "ClassTrace" : "Contract"}:</strong>&nbsp;
+            {resultClass}
+          </Text>
+        </Box>
+      </Box>}
     </Box>
   </Flex>
   );

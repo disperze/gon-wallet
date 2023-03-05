@@ -1,5 +1,5 @@
 import { DeliverTxResponse } from "@cosmjs/cosmwasm-stargate";
-import { isDeliverTxFailure } from "@cosmjs/stargate";
+import { isDeliverTxFailure, Event } from "@cosmjs/stargate";
 import { coins, Token } from "../../config";
 
 export function formatAddress(wallet: string): string {
@@ -44,4 +44,13 @@ export function assertTxSuccess(result: DeliverTxResponse) {
   if (isDeliverTxFailure(result)) {
     throw new Error(createDeliverTxResponseErrorMessage(result));
   }
+}
+
+export function mapEventAttributes(events: readonly Event[], key: string): any {
+  return events
+    .find((e: any) => e.type === key)?.attributes
+    .reduce((acc: any, a: any) => {
+      acc[a.key] = a.value;
+      return acc;
+    }, {} as any);
 }
