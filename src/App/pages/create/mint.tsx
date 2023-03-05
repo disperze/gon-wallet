@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { TransactionLink } from "../../components"
 import {
+  assertTxSuccess,
   useSdk,
 } from "../../services";
 import { MsgMintNFT } from "../../proto/nft/tx";
@@ -75,6 +76,7 @@ export const MintNFT = () => {
 
       const client = getSignClient()!;
       const res = await client.signAndBroadcast(address, [msg], 1.3, "");
+      assertTxSuccess(res);
 
       toast({
         title: `Successful Transaction`,

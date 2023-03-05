@@ -35,6 +35,7 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import {
+  assertTxSuccess,
   formatAddress,
   normalizeImg,
   useSdk,
@@ -120,6 +121,8 @@ export const AccountToken = () => {
         };
 
         const res = await signClient.signAndBroadcast(address, [msg], 1.2, "GoN");
+        assertTxSuccess(res);
+
         toast({
           title: `Successful Transaction`,
           description: (<TransactionLink tx={res.transactionHash} />),
@@ -280,3 +283,5 @@ export const AccountToken = () => {
       </Box>
     );
 }
+
+

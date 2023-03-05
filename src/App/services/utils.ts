@@ -1,3 +1,5 @@
+import { DeliverTxResponse } from "@cosmjs/cosmwasm-stargate";
+import { isDeliverTxFailure } from "@cosmjs/stargate";
 import { coins, Token } from "../../config";
 
 export function formatAddress(wallet: string): string {
@@ -32,4 +34,14 @@ export function toMinDenom(amount: number, denom: string): string {
 
 export function normalizeImg(uri: string): string {
   return uri?.endsWith(".png") || uri?.endsWith(".jpg") || uri?.endsWith(".jpeg") ? uri : "";
+}
+
+export function createDeliverTxResponseErrorMessage(result: DeliverTxResponse): string {
+  return `Error when broadcasting tx ${result.transactionHash} at height ${result.height}. Code: ${result.code}; Raw log: ${result.rawLog}`;
+}
+
+export function assertTxSuccess(result: DeliverTxResponse) {
+  if (isDeliverTxFailure(result)) {
+    throw new Error(createDeliverTxResponseErrorMessage(result));
+  }
 }

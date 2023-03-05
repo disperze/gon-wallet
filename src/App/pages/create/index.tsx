@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { TransactionLink } from "../../components"
 import {
+  assertTxSuccess,
   useSdk,
 } from "../../services";
 import { MsgIssueDenom } from "../../proto/nft/tx";
@@ -72,6 +73,7 @@ export const Create = () => {
 
       const client = getSignClient()!;
       const res = await client.signAndBroadcast(address, [msg], 1.3, "Create collection");
+      assertTxSuccess(res);
 
       toast({
         title: `Successful Transaction`,
