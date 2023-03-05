@@ -13,6 +13,7 @@ import {
   AccountToken,
   Create,
   HomePage,
+  IBCTransfer,
   MintNFT,
 } from "./pages"
 import { SdkProvider } from "./services/client/wallet"
@@ -42,6 +43,10 @@ export const App = () => (
           <Route
             path="/account/:user"
             component={Account}
+          />
+          <Route
+            path="/ibc-transfer"
+            component={IBCTransfer}
           />
           <Route
             exact
