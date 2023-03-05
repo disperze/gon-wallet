@@ -13,35 +13,24 @@ import {
   useBoolean,
   useToast,
 } from "@chakra-ui/react";
-import { Bech32, toHex } from "@cosmjs/encoding";
-import { FileUpload, TransactionLink } from "../../components"
+import { TransactionLink } from "../../components"
 import {
-  CW721,
   useSdk,
 } from "../../services";
-import { config } from "../../../config";
-
-function generateId(address: string) {
-  // TODO: Format ID?
-  const pubkey = toHex(Bech32.decode(address).data);
-  return (
-    pubkey?.substr(2, 10) +
-    pubkey?.substring(pubkey.length - 8) +
-    '-' +
-    Math.random().toString(36).substr(2, 9)
-  ).toUpperCase();
-}
+import { MsgIssueDenom } from "../../proto/nft/tx";
 
 export const Create = () => {
   const toast = useToast();
   const history = useHistory();
   const { getSignClient, address } = useSdk();
-  const [files, setFiles] = useState<File[]>();
-  const [nftName, setNftName]= useState<string>();
+  const [denom, setDenom]= useState<string>();
+  const [name, setName]= useState<string>();
+  const [symbol, setSymbol]= useState<string>();
+  const [data, setData]= useState<string>();
   const [description, setDescription]= useState<string>();
   const [loading, setLoading] = useBoolean();
 
-  async function createNft(e: any) {
+  async function createCollection(e: any) {
     // TODO: use formik validations
     e.preventDefault();
 
@@ -57,38 +46,43 @@ export const Create = () => {
       return;
     }
 
-    if (!files || files.length === 0) {
+    if (!denom || !name || !symbol) {
       return;
     }
 
     setLoading.on();
-    // TODO: Load on init page and show after load page
-    const nftId = generateId(address);
 
     try {
-      const fileHash = await uploadFile(files[0]);
-      console.log(fileHash, nftId);
-      const nftMsg = {
-        token_id: nftId,
-        owner: address,
-        name: nftName!,
-        description: description,
-        image: unSanitizeIpfsUrl(fileHash)
+      const msg = {
+        typeUrl: '/irismod.nft.MsgIssueDenom',
+        value: MsgIssueDenom.fromPartial({
+          id: denom,
+          name: name,
+          schema: "",
+          data: data ?? "",
+          description: description ?? "",
+          mintRestricted: false,
+          updateRestricted: false,
+          sender: address,
+          symbol: symbol,
+          uri: "",
+          uriHash: ""
+        })
       };
 
-      const contract = CW721(config.contract).useTx(getSignClient()!);
-      const txHash = await contract.mint(address, nftMsg);
+      const client = getSignClient()!;
+      const res = await client.signAndBroadcast(address, [msg], 1.3, "Create collection");
 
       toast({
         title: `Successful Transaction`,
-        description: (<TransactionLink tx={txHash} />),
+        description: (<TransactionLink tx={res.transactionHash} />),
         status: "success",
         position: "bottom-right",
         isClosable: true,
       });
 
       setLoading.off();
-      history.push(`/account/token/${nftId}`);
+      history.push(`/mint/nft?cid=${denom}`);
     } catch (error) {
       toast({
         title: "Error",
@@ -110,30 +104,58 @@ export const Create = () => {
     <Box maxW="500px" w="100%">
       <Box>
         <Box mt={6} mb={10}>
-          <Heading as="h3" fontSize="3xl">Create a single NFT</Heading>
+          <Heading as="h3" fontSize="3xl">Create collection</Heading>
         </Box>
-        <Box as={'form'} id="nft-form" onSubmit={createNft}>
-        <Box>
-            <FormControl id="name" isRequired>
+        <Box as={'form'} id="nft-form" onSubmit={createCollection}>
+        <Box mt={4}>
+          <FormControl id="denom" isRequired>
+            <FormLabel
+              fontSize="sm"
+              fontFamily="mono"
+              fontWeight="semibold"
+            >Denom</FormLabel>
+            <Input
+              name="denom"
+              spellCheck={false}
+              onChange={e => setDenom(e.target.value)} />
+          </FormControl>
+        </Box>
+        <Box mt={4}>
+          <FormControl id="name" isRequired>
+            <FormLabel
+              fontSize="sm"
+              fontFamily="mono"
+              fontWeight="semibold"
+            >Name</FormLabel>
+            <Input
+              name="name"
+              spellCheck={false}
+              onChange={e => setName(e.target.value)} />
+          </FormControl>
+        </Box>
+        <Box mt={4}>
+          <FormControl id="symbol" isRequired>
+            <FormLabel
+              fontSize="sm"
+              fontFamily="mono"
+              fontWeight="semibold"
+            >Symbol</FormLabel>
+            <Input
+              name="symbol"
+              spellCheck={false}
+              onChange={e => setSymbol(e.target.value)} />
+          </FormControl>
+        </Box>
+        <Box mt={4}>
+            <FormControl id="data">
               <FormLabel
                 fontSize="sm"
                 fontFamily="mono"
                 fontWeight="semibold"
-              >Image</FormLabel>
-              <FileUpload accept="image/*" onDrop={acceptedFiles => setFiles(acceptedFiles)} />
-            </FormControl>
-          </Box>
-          <Box mt={4}>
-            <FormControl id="name" isRequired>
-              <FormLabel
-                fontSize="sm"
-                fontFamily="mono"
-                fontWeight="semibold"
-              >Name</FormLabel>
-              <Input
-                name="name"
+              >Data</FormLabel>
+              <Textarea name="data"
                 spellCheck={false}
-                onChange={e => setNftName(e.target.value)} />
+                onChange={e => setData(e.target.value)} />
             </FormControl>
           </Box>
           <Box mt={4}>
@@ -144,7 +166,7 @@ export const Create = () => {
                 fontWeight="semibold"
               >Description</FormLabel>
               <Textarea name="description"
-                placeholder="NFT description"
+                placeholder="Collection description"
                 spellCheck={false}
                 onChange={e => setDescription(e.target.value)} />
             </FormControl>
@@ -152,7 +174,7 @@ export const Create = () => {
           <Box mt={6}>
             <Button
               isLoading={loading}
-              loadingText="Minting"
+              loadingText="Creating"
               type="submit"
               height="var(--chakra-sizes-10)"
               fontSize={'md'}
@@ -173,11 +195,3 @@ export const Create = () => {
   </Flex>
   );
 }
-function uploadFile(arg0: File) {
-  throw new Error("Function not implemented.");
-}
-
-function unSanitizeIpfsUrl(fileHash: void) {
-  throw new Error("Function not implemented.");
-}
-
