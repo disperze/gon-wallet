@@ -4,3 +4,4 @@ export * from './cw721';
 export * from './market';
 export * from './sdk';
 export * from './wallet';
+export * from './socket';
