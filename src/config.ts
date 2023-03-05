@@ -161,5 +161,5 @@ export const coins: Token[] = [
   },
 ];
 
-export const networks: NetworkConfigs = { local, testnet, juno, stars, omniflix };
+export const networks: NetworkConfigs = { local, testnet, iris: testnet, juno, stars, omniflix };
 export const config = getAppConfig(networks);
