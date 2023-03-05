@@ -11,7 +11,9 @@ import {
 import {
   Account,
   AccountToken,
+  Create,
   HomePage,
+  MintNFT,
 } from "./pages"
 import { SdkProvider } from "./services/client/wallet"
 import { config } from "../config";
@@ -24,6 +26,14 @@ export const App = () => (
 
         <Router>
           <Navbar />
+          <Route
+            path="/create"
+            component={Create}
+          />
+          <Route
+            path="/mint/nft"
+            component={MintNFT}
+          />
           <Route
             exact
             path="/tokens"

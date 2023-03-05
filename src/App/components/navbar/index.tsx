@@ -86,9 +86,9 @@ export function Navbar(): JSX.Element {
 const DesktopNav = () => {
   return (
     <Stack direction={'row'} spacing={6} display={{ base: 'none', md: 'inline-flex' }}>
-      {/* <Link
+      <Link
         as={ReactRouterLink}
-        to="/"
+        to="/create"
         p={1.5}
         fontSize={'sm'}
         fontFamily={'mono'}
@@ -96,8 +96,20 @@ const DesktopNav = () => {
         _hover={{
           color: useColorModeValue('light', 'dark'),
         }}>
-        Explore
-      </Link> */}
+        Issue
+      </Link>
+      <Link
+        as={ReactRouterLink}
+        to="/mint/nft"
+        p={1.5}
+        fontSize={'sm'}
+        fontFamily={'mono'}
+        fontWeight={'semibold'}
+        _hover={{
+          color: useColorModeValue('light', 'dark'),
+        }}>
+        Mint
+      </Link>
       <Button
         as={ReactRouterLink}
         to="/create"
