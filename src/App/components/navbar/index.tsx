@@ -5,7 +5,6 @@ import {
   Flex,
   Text,
   IconButton,
-  Image,
   Button,
   Stack,
   Collapse,

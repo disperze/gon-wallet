@@ -4,7 +4,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Link as ReactRouterLink, useParams } from "react-router-dom";
+import { Link as ReactRouterLink, useLocation, useHistory } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -14,6 +14,7 @@ import {
   Flex,
   HStack,
   Image,
+  Input,
   Link,
   Spinner,
   VStack,
@@ -27,10 +28,6 @@ import {
   FormControl,
   FormLabel,
   ModalFooter,
-  Select,
-  NumberInput,
-  NumberInputField,
-  SimpleGrid,
   GridItem,
   useDisclosure,
   useToast,
@@ -38,58 +35,53 @@ import {
   Grid,
 } from "@chakra-ui/react";
 import {
-  CW721,
-  NftInfoResponse,
-  publicIpfsUrl,
   formatAddress,
-  formatPrice,
-  Market,
-  OfferResponse,
-  toMinDenom,
   useSdk,
 } from "../../services";
-import { TransactionLink } from "../../components";
-import { coins, config } from "../../../config";
 import userLogo from "../../assets/user-default.svg";
 import cosmverseLogo from "../../assets/cosmverse.jpg";
+import { Nft } from "../../services/client/iris_nft";
+import { MsgTransfer } from "../../proto/nft_transfer/tx";
+import { TransactionLink } from "../../components";
+import { fromBech32 } from "@cosmjs/encoding";
 
-interface DetailParams {
-    readonly id: string;
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
 export const AccountToken = () => {
-    const { id } = useParams<DetailParams>();
-    const { client, address, getSignClient } = useSdk();
-    const [nft, setNft] = useState<NftInfoResponse>();
-    const [owner, setOwner] = useState<string>();
-    const [offer, setOffer] = useState<OfferResponse>();
+    const query = useQuery();
+    const history = useHistory();
+    const { config, nftClient, address, getSignClient } = useSdk();
+    const [nft, setNft] = useState<Nft>();
     const [loading, setLoading] = useBoolean();
 
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [amount, setAmount] = useState<number>();
-    const [denom, setDenom] = useState<string>();
+    const [recipient, setRecipient] = useState<string>();
+
+    const normalizeImg = (uri: string) => {
+      return uri?.endsWith(".png") || uri?.endsWith(".jpg") || uri?.endsWith(".jpeg") ? uri : "";
+    };
 
     const loadData = useCallback(async () => {
-      if (!client) return;
+      if (!nftClient) return;
 
-      const contract = CW721(config.contract).use(client);
-      const marketContract = Market(config.marketContract).use(client);
+      const cid = query.get("cid");
+      const id = query.get("nid");
+      if (!cid || !id) return;
 
-      const result = await contract.nftInfo(id);
-      result.image = publicIpfsUrl(result.image);
-      const offer = await marketContract.offer(config.contract, id);
-
-      setOffer(offer);
-      setOwner(offer ? offer.seller : (await contract.ownerOf(id)));
-      setNft(result);
-    }, [client, id]);
+      const nft = await nftClient.getNFT(cid, id);
+      setNft(nft);
+    }, [nftClient, query]);
 
     useEffect(() => {
       loadData();
     }, [loadData]);
 
-    const handleSell = async () => {
+    const handleTransfer = async () => {
       const signClient = getSignClient();
       if (!signClient) {
         toast({
@@ -103,23 +95,43 @@ export const AccountToken = () => {
         return;
       }
 
-      if (!amount || !denom) return;
-      onClose();
-      setLoading.on();
-
+      if (!nft || !recipient) return;
       try {
-        const contract = CW721(config.contract).useTx(signClient);
-        const price = { list_price: {amount: toMinDenom(amount, denom), denom}};
-        const txHash = await contract.send(address, config.marketContract, price, id);
+        const { prefix } = fromBech32(recipient);
+        const ibcParams = config.channels?.find((c) => c.id === prefix)
+        if (!ibcParams) {
+          throw new Error("Invalid recipient address");
+        }
+        onClose();
+        setLoading.on();
 
+        const d = new Date();
+        d.setMinutes(d.getMinutes() + 10);
+
+        const msg = {
+          typeUrl: "/ibc.applications.nft_transfer.v1.MsgTransfer",
+          value: MsgTransfer.fromPartial({
+            classId: nft.cid,
+            tokenIds: [nft.id],
+            sender: address,
+            receiver: recipient,
+            sourceChannel: ibcParams.channel,
+            sourcePort: ibcParams.port,
+            timeoutHeight: {revisionHeight: 0, revisionNumber: 0},
+            timeoutTimestamp: d.getTime() * 1000000, // nanoseconds
+          })
+        };
+
+        const res = await signClient.signAndBroadcast(address, [msg], 1.2, "GoN");
         toast({
           title: `Successful Transaction`,
-          description: (<TransactionLink tx={txHash} />),
+          description: (<TransactionLink tx={res.transactionHash} />),
           status: "success",
           position: "bottom-right",
           isClosable: true,
         });
-        await loadData();
+
+        history.push(`/account/${address}`);
       } catch (error) {
         toast({
           title: "Error",
@@ -134,48 +146,6 @@ export const AccountToken = () => {
       }
     };
 
-    const handleWithdraw = async () => {
-      const signClient = getSignClient();
-      if (!signClient) {
-        toast({
-          title: "Account required.",
-          description: "Please, connect wallet.",
-          status: "warning",
-          position: "top",
-          isClosable: true,
-        });
-
-        return;
-      }
-
-      if (!offer) return;
-      setLoading.on();
-
-      try {
-        const contract = Market(config.marketContract).useTx(signClient);
-        const txHash = await contract.withdraw(address, offer.id);
-
-        toast({
-          title: `Successful Transaction`,
-          description: (<TransactionLink tx={txHash} />),
-          status: "success",
-          position: "bottom-right",
-          isClosable: true,
-        });
-        await loadData();
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: `${error}`,
-          status: "error",
-          position: "bottom-right",
-          isClosable: true,
-        });
-      }
-      finally {
-        setLoading.off();
-      }
-    };
 
     const loadingSkeleton = (
       <Center>
@@ -192,28 +162,18 @@ export const AccountToken = () => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create sell order</ModalHeader>
+          <ModalHeader>IBC NFT Transfer</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <FormLabel fontFamily="mono" fontWeight="semibold">Price</FormLabel>
-            <SimpleGrid columns={6} spacing={3}>
+            <FormLabel fontFamily="mono" fontWeight="semibold">Recipient</FormLabel>
             <FormControl as={GridItem} colSpan={[6, 4]}>
-              <NumberInput
-                onChange={(_, value) => setAmount(value)}>
-                <NumberInputField />
-              </NumberInput>
+              <Input placeholder='juno1... stars1...' onChange={(event) => setRecipient(event.target.value)} />
             </FormControl>
-            <FormControl as={GridItem} colSpan={[6, 2]}>
-              <Select placeholder="Select coin" onChange={e => setDenom(e.target.value)}>
-                {coins.map(c => <option value={c.denom}>{c.name}</option>)}
-              </Select>
-            </FormControl>
-            </SimpleGrid>
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={handleSell} colorScheme="pink" mr={3}>
-              Confirm
+            <Button onClick={handleTransfer} colorScheme="cyan" mr={3}>
+              Transfer
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -238,7 +198,7 @@ export const AccountToken = () => {
                   boxSize="420px"
                   fit="cover"
                   fallbackSrc={cosmverseLogo}
-                  src={nft.image}
+                  src={normalizeImg(nft.uri)}
                   alt={nft.name} />
               </Flex>
             </GridItem>
@@ -250,21 +210,21 @@ export const AccountToken = () => {
                       fontWeight="bold"
                       fontSize="3xl"
                     >
-                      {nft.name}
+                      {nft.name || nft.id}
                     </chakra.h1>
                     <chakra.p
                       mt={1}
-                      fontSize="xs"
-                      color="cyan.500"
+                      maxW="400px"
+                      fontSize="md"
                     >
-                      @unknown
+                      {nft.data}
                     </chakra.p>
                     <chakra.p
                       mt={1}
                       maxW="400px"
                       fontSize="md"
                     >
-                      {nft.description}
+                      <strong>URI:</strong> {nft.uri}
                     </chakra.p>
                   </Box>
                   <Box>
@@ -288,29 +248,8 @@ export const AccountToken = () => {
                               color: "gray.600",
                             }}
                             as={ReactRouterLink}
-                            to={`/account/${owner}`}>{formatAddress(owner!)}</Link>
+                            to={`/account/${nft.owner}`}>{formatAddress(nft.owner)}</Link>
                         </HStack>
-                      </Box>
-                    </VStack>
-                  </Box>
-                  <Box>
-                    <VStack spacing={2} align="stretch">
-                      <Box>
-                        <chakra.p
-                          fontFamily="mono"
-                          fontSize="md"
-                          color="gray.500"
-                        >
-                          Price
-                        </chakra.p>
-                      </Box>
-                      <Box>
-                        <chakra.p
-                          fontWeight="semibold"
-                          fontSize="md"
-                        >
-                          {offer ? formatPrice(offer.list_price) : "Not listed"}
-                        </chakra.p>
                       </Box>
                     </VStack>
                   </Box>
@@ -318,25 +257,7 @@ export const AccountToken = () => {
                     borderTop={1}
                     borderStyle={'solid'}
                     borderColor={borderColor}>
-                    {offer ? (
-                      <Button
-                        isLoading={loading}
-                        onClick={handleWithdraw}
-                        title="Withdraw NFT"
-                        type="button"
-                        height="var(--chakra-sizes-10)"
-                        fontSize={'md'}
-                        fontWeight="semibold"
-                        borderRadius={'50px'}
-                        color={'white'}
-                        bg="pink.500"
-                        _hover={{
-                          bg: "pink.700",
-                        }}>
-                        Cancel
-                      </Button>
-                    ) : (
-                      <Button
+                    { address === nft.owner && <Button
                         isLoading={loading}
                         onClick={onOpen}
                         type="button"
@@ -345,13 +266,13 @@ export const AccountToken = () => {
                         fontWeight="semibold"
                         borderRadius={'50px'}
                         color={'white'}
-                        bg="pink.500"
+                        bg="cyan.900"
                         _hover={{
-                          bg: "pink.700",
+                          bg: "gray.700",
                         }}>
-                        Sell
+                        IBC Transfer
                       </Button>
-                    )}
+                  }
                   </Box>
                 </VStack>
               </Flex>
