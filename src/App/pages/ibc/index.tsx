@@ -162,6 +162,7 @@ export const IBCTransfer = () => {
         position: "bottom-right",
         isClosable: true,
       });
+      console.log("TRANSFER TX: ", res.transactionHash);
 
       const packetAttrs = mapEventAttributes(res.events, "send_packet");
       const query =`recv_packet.packet_dst_channel='${packetAttrs['packet_dst_channel']}' AND recv_packet.packet_sequence='${packetAttrs['packet_sequence']}'`;
@@ -169,13 +170,15 @@ export const IBCTransfer = () => {
       waitingIbcTransfer(dstNetwork.rpcUrl, query, sender)
       .then((tx: any) => {
         setLoading.off();
+        const txHash = tx.events['tx.hash'][0];
         toast({
           title: `IBC Completed`,
-          description: (<TransactionLink tx={tx.events['tx.hash'][0]} explorerUrl={dstNetwork.explorerTx} />),
+          description: (<TransactionLink tx={txHash} explorerUrl={dstNetwork.explorerTx} />),
           status: "success",
           position: "bottom-right",
           isClosable: true,
         });
+        console.log("RCV TX: ", txHash);
 
         if (dstNetwork.keplrFeatures.includes("cosmwasm")) {
           const events = tx.data.value.TxResult.result.events;
@@ -270,6 +273,7 @@ export const IBCTransfer = () => {
               fontSize="sm"
               fontFamily="mono"
               fontWeight="semibold"
+              placeholder="iaa1... juno1.. stars1.."
             >Recipient</FormLabel>
             <Input
               name="name"
