@@ -15,6 +15,7 @@ import {
   SimpleGrid,
   LinkBox,
   LinkOverlay,
+  useToast,
 } from "@chakra-ui/react";
 import {
   NftInfo,
@@ -34,6 +35,7 @@ const maxItemsPerPage = 100;
 
 export const Account = () => {
   const { user } = useParams<AccountParams>();
+  const toast = useToast();
 
   const { nftClient } = useSdk();
   const [nfts, setNfts] = useState<NftInfo[]>([]);
@@ -64,9 +66,19 @@ export const Account = () => {
     (async () => {
       if (!nftClient || !user) return;
 
-      const result = await nftClient.getCollections(user, maxItemsPerPage);
-      const nfts = await getNftsInfo(result.owner!.idCollections, nftClient);
-      setNfts(nfts);
+      try {
+        const result = await nftClient.getCollections(user, maxItemsPerPage);
+        const nfts = await getNftsInfo(result.owner!.idCollections, nftClient);
+        setNfts(nfts);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: `${error}`,
+          status: "error",
+          position: "bottom-right",
+          isClosable: true,
+        });
+      }
     })();
   }, [nftClient, user]);
 

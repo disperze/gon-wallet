@@ -53,6 +53,9 @@ export class IrisNFTClient {
     }).finish();
 
     const res = await this.callRpc("/irismod.nft.Query/NFTsOfOwner", data)
+    if (!res) {
+      throw new Error("Error fetching");
+    }
 
     return QueryNFTsOfOwnerResponse.decode(res);
   }
@@ -64,6 +67,9 @@ export class IrisNFTClient {
     }).finish();
 
     const res = await this.callRpc("/irismod.nft.Query/NFT", data)
+    if (!res) {
+      throw new Error("Error fetching");
+    }
 
     const nft = QueryNFTResponse.decode(res).nft!;
     return {
@@ -84,6 +90,6 @@ export class IrisNFTClient {
       }
     }
     return await this.instance.post("", payload)
-      .then((res) => fromBase64(res.data.result.response.value))
+      .then((res) => res.data.result.response.value ? fromBase64(res.data.result.response.value) : "")
   }
 }
