@@ -281,7 +281,7 @@ export const IBCTransfer = () => {
               fontWeight="semibold"
               borderRadius={'50px'}
               color={'white'}
-              bg="pink.500"
+              bg="cyan.900"
               _hover={{
                 bg: "gray.500",
               }}>
