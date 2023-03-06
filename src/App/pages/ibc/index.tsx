@@ -61,7 +61,7 @@ export const IBCTransfer = () => {
   function resetForm() {
     setOrigin("");
     setClassId("");
-    setTokenId("");
+    // setTokenId("");
     setOrigin("");
     setRecipient("");
     setChannel("");
