@@ -50,7 +50,7 @@ export const IBCTransfer = () => {
   const { getSignClient, address } = useSdk();
   const [classId, setClassId]= useState<string>(query.get("cid") ?? "");
   const [tokenId, setTokenId]= useState<string>(query.get("nid") ?? "");
-  const [origin, setOrigin]= useState<string>();
+  const [origin, setOrigin]= useState<string>(query.get("chain") ?? "");
   const [recipient, setRecipient]= useState<string>();
   const [resultClass, setResultClass]= useState<string>();
   const [loading, setLoading] = useBoolean();
@@ -152,7 +152,7 @@ export const IBCTransfer = () => {
 
       toast({
         title: `Successful Transaction`,
-        description: (<TransactionLink tx={res.transactionHash} />),
+        description: (<TransactionLink tx={res.transactionHash} explorerUrl={network.explorerTx} />),
         status: "success",
         position: "bottom-right",
         isClosable: true,
