@@ -225,6 +225,7 @@ export const IBCTransfer = () => {
               <option value='juno'>JUNO</option>
               <option value='stars'>STARGAZE</option>
               <option value='omniflix'>Omniflix</option>
+              {/* <option value='uptick'>Uptick</option> */}
             </Select>
           </FormControl>
         </Box>
@@ -294,7 +295,7 @@ export const IBCTransfer = () => {
         <Box mt={6} mb={10}>
           <Heading as="h3" fontSize="3xl">Remote Result</Heading>
           <Text fontSize="md" mt={2}>
-            <strong>{resultClass?.startsWith("ibc/") ? "ClassTrace" : "Contract"}:</strong>&nbsp;
+            <strong>{resultClass?.startsWith("ibc/") ? "ClassID" : "Contract"}:</strong>&nbsp;
             {resultClass}
           </Text>
         </Box>

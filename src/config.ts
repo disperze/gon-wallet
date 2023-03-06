@@ -163,7 +163,23 @@ const uptick: AppConfig = {
   },
   gasPrice: 0.025,
   keplrFeatures: ['ibc-transfer', 'eth-address-gen', 'eth-key-sign',],
-  channels: [],
+  channels: [{
+    id: "juno",
+    channel: "channel-7",
+    port: "nft-transfer",
+  }, {
+    id: "stars",
+    channel: "channel-6",
+    port: "nft-transfer",
+  }, {
+    id: "iaa",
+    channel: "channel-3",
+    port: "nft-transfer",
+  }, {
+    id: "omniflix",
+    channel: "channel-5",
+    port: "nft-transfer",
+  }],
 };
 
 export interface Token {
