@@ -14,28 +14,14 @@ import {
   Flex,
   HStack,
   Image,
-  Input,
   Link,
   Spinner,
   VStack,
   useColorModeValue,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  FormControl,
-  FormLabel,
-  ModalFooter,
   GridItem,
-  useDisclosure,
-  useToast,
-  useBoolean,
   Grid,
 } from "@chakra-ui/react";
 import {
-  assertTxSuccess,
   formatAddress,
   normalizeImg,
   useSdk,
@@ -43,9 +29,6 @@ import {
 import userLogo from "../../assets/user-default.svg";
 import cosmverseLogo from "../../assets/cosmverse.jpg";
 import { Nft } from "../../services/client/iris_nft";
-import { MsgTransfer } from "../../proto/nft_transfer/tx";
-import { TransactionLink } from "../../components";
-import { fromBech32 } from "@cosmjs/encoding";
 
 function useQuery() {
   const { search } = useLocation();
@@ -56,13 +39,8 @@ function useQuery() {
 export const AccountToken = () => {
     const query = useQuery();
     const history = useHistory();
-    const { config, nftClient, address, getSignClient } = useSdk();
+    const { nftClient, address } = useSdk();
     const [nft, setNft] = useState<Nft>();
-    const [loading, setLoading] = useBoolean();
-
-    const toast = useToast();
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [recipient, setRecipient] = useState<string>();
 
     const loadData = useCallback(async () => {
       if (!nftClient) return;
@@ -79,73 +57,10 @@ export const AccountToken = () => {
       loadData();
     }, [loadData]);
 
-    const handleTransfer = async () => {
-      const signClient = getSignClient();
-      if (!signClient) {
-        toast({
-          title: "Account required.",
-          description: "Please, connect wallet.",
-          status: "warning",
-          position: "top",
-          isClosable: true,
-        });
-
-        return;
-      }
-
-      if (!nft || !recipient) return;
-      try {
-        const { prefix } = fromBech32(recipient);
-        const ibcParams = config.channels?.find((c) => c.id === prefix)
-        if (!ibcParams) {
-          throw new Error("Invalid recipient address");
-        }
-        onClose();
-        setLoading.on();
-
-        const d = new Date();
-        d.setMinutes(d.getMinutes() + 10);
-
-        const msg = {
-          typeUrl: "/ibc.applications.nft_transfer.v1.MsgTransfer",
-          value: MsgTransfer.fromPartial({
-            classId: nft.cid,
-            tokenIds: [nft.id],
-            sender: address,
-            receiver: recipient,
-            sourceChannel: ibcParams.channel,
-            sourcePort: ibcParams.port,
-            timeoutHeight: {revisionHeight: 0, revisionNumber: 0},
-            timeoutTimestamp: d.getTime() * 1000000, // nanoseconds
-          })
-        };
-
-        const res = await signClient.signAndBroadcast(address, [msg], 1.2, "GoN");
-        assertTxSuccess(res);
-
-        toast({
-          title: `Successful Transaction`,
-          description: (<TransactionLink tx={res.transactionHash} />),
-          status: "success",
-          position: "bottom-right",
-          isClosable: true,
-        });
-
-        history.push(`/account/${address}`);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: `${error}`,
-          status: "error",
-          position: "bottom-right",
-          isClosable: true,
-        });
-      }
-      finally {
-        setLoading.off();
-      }
+    const goToIbcTransfer = () => {
+      if (!nft) return;
+      history.push(`/ibc-transfer?chain=${'iaa'}&cid=${nft.cid}&nid=${nft.id}`);
     };
-
 
     const loadingSkeleton = (
       <Center>
@@ -154,31 +69,6 @@ export const AccountToken = () => {
     );
 
     const borderColor = useColorModeValue('cyan.900', 'white.200');
-    const priceModal = (
-      <Modal
-        closeOnOverlayClick={false}
-        isOpen={isOpen}
-        onClose={onClose}
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>IBC NFT Transfer</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormLabel fontFamily="mono" fontWeight="semibold">Recipient</FormLabel>
-            <FormControl as={GridItem} colSpan={[6, 4]}>
-              <Input placeholder='juno1... stars1...' onChange={(event) => setRecipient(event.target.value)} />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button onClick={handleTransfer} colorScheme="cyan" mr={3}>
-              Transfer
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    );
     return (
       <Box m={5}>
         {!nft ? loadingSkeleton : (
@@ -258,8 +148,7 @@ export const AccountToken = () => {
                     borderStyle={'solid'}
                     borderColor={borderColor}>
                     { address === nft.owner && <Button
-                        isLoading={loading}
-                        onClick={onOpen}
+                        onClick={goToIbcTransfer}
                         type="button"
                         height="var(--chakra-sizes-10)"
                         fontSize={'md'}
@@ -279,7 +168,6 @@ export const AccountToken = () => {
             </GridItem>
           </Grid>
       )}
-      {priceModal}
       </Box>
     );
 }

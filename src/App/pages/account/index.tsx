@@ -80,7 +80,7 @@ export const Account = () => {
         });
       }
     })();
-  }, [nftClient, user]);
+  }, [nftClient, user, toast]);
 
   const getNftPath = (cid?: string, nftId?: string) => `/tokens?cid=${cid}&nid=${nftId}`;
 
