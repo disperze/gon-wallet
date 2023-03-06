@@ -32,7 +32,7 @@ export function Navbar(): JSX.Element {
         px={{ base: 4 }}
         borderBottom={1}
         borderStyle={'solid'}
-        borderBottomColor={useColorModeValue('pink.400', 'gray.300')}
+        borderBottomColor={useColorModeValue('cyan.900', 'white.200')}
         align={'center'}>
         <Flex
           flex={{ base: 0, md: 'auto' }}
