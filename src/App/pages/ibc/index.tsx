@@ -13,6 +13,8 @@ import {
   useBoolean,
   useToast,
   Text,
+  Collapse,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { TransactionLink } from "../../components"
 import {
@@ -52,6 +54,7 @@ export const IBCTransfer = () => {
   const [tokenId, setTokenId]= useState<string>(query.get("nid") ?? "");
   const [origin, setOrigin]= useState<string>(query.get("chain") ?? "");
   const [recipient, setRecipient]= useState<string>();
+  const [channel, setChannel]= useState<string>();
   const [resultClass, setResultClass]= useState<string>();
   const [loading, setLoading] = useBoolean();
 
@@ -61,6 +64,7 @@ export const IBCTransfer = () => {
     setTokenId("");
     setOrigin("");
     setRecipient("");
+    setChannel("");
   }
   async function createNft(e: any) {
     e.preventDefault();
@@ -107,6 +111,7 @@ export const IBCTransfer = () => {
         client = await createClient(network, signer);
       }
 
+      const ibcChannel = channel || ibcParams.channel;
       let msg;
       if (network.keplrFeatures.includes("cosmwasm")) {
         const ics721Contract = ibcParams.port.split(".")[1];
@@ -121,7 +126,7 @@ export const IBCTransfer = () => {
                 token_id: tokenId,
                 msg: toBase64(toUtf8(JSON.stringify({
                   receiver: recipient,
-                  channel_id: ibcParams.channel,
+                  channel_id: ibcChannel,
                   timeout: {
                     timestamp: timeout.toString(),
                   }
@@ -139,7 +144,7 @@ export const IBCTransfer = () => {
             tokenIds: tokenId.split(","),
             sender,
             receiver: recipient,
-            sourceChannel: ibcParams.channel,
+            sourceChannel: ibcChannel,
             sourcePort: ibcParams.port,
             timeoutHeight: {revisionHeight: 0, revisionNumber: 0},
             timeoutTimestamp: timeout,
@@ -198,6 +203,8 @@ export const IBCTransfer = () => {
       setLoading.off();
     }
   }
+
+  const { isOpen, onToggle } = useDisclosure();
 
   return (
   <Flex
@@ -271,6 +278,25 @@ export const IBCTransfer = () => {
               onChange={e => setRecipient(e.target.value)} />
           </FormControl>
         </Box>
+        <Box mt={4}>
+          <Button size="sm" onClick={onToggle} mt="1rem">
+            Advanced
+          </Button>
+          <Collapse in={isOpen}>
+            <FormControl id="channel" mt={2}>
+              <FormLabel
+                fontSize="sm"
+                fontFamily="mono"
+                fontWeight="semibold"
+              >Channel (Optional)</FormLabel>
+              <Input
+                name="channel"
+                value={channel}
+                spellCheck={false}
+                onChange={e => setChannel(e.target.value)} />
+            </FormControl>
+          </Collapse>
+         </Box>
           <Box mt={6}>
             <Button
               isLoading={loading}
