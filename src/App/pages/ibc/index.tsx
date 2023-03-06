@@ -187,11 +187,14 @@ export const IBCTransfer = () => {
           if (!wasm) return;
           const cw721Contract = atob(wasm.attributes.find((a: any) => a.key === btoa('_contract_address')).value)
           setResultClass(cw721Contract);
+          setClassId(cw721Contract);
         } else {
           const traceEvent = tx.events['class_trace.classID'];
           if (!traceEvent) return;
           setResultClass(traceEvent[0]);
+          setClassId(traceEvent[0]);
         }
+        setOrigin(prefix);
       });
 
       resetForm();
