@@ -155,7 +155,7 @@ const uptick: AppConfig = {
   addressPrefix: "uptick",
   rpcUrl: "http://52.220.252.160:26657",
   httpUrl: "http://52.220.252.160:1317",
-  explorerTx: 'http://52.220.252.160:26657/tx?hash=0x',
+  explorerTx: 'https://explorer.testnet.uptick.network/uptick-network-testnet/tx/',
   token: {
     coinDenom: "UPTICK",
     coinDecimals: 18,
