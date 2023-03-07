@@ -153,7 +153,8 @@ const uptick: AppConfig = {
   chainId: "uptick_7000-2",
   chainName: "Uptick GoN",
   addressPrefix: "uptick",
-  rpcUrl: "http://52.220.252.160:26657",
+  coinType: 60,
+  rpcUrl: "http://185.252.235.216:8084",
   httpUrl: "http://52.220.252.160:1317",
   explorerTx: 'https://explorer.testnet.uptick.network/uptick-network-testnet/tx/',
   token: {

@@ -19,6 +19,7 @@ export interface Channel {
 export interface AppConfig {
   readonly chainId: string;
   readonly chainName: string;
+  readonly coinType?: number;
   readonly addressPrefix: string;
   readonly rpcUrl: string;
   readonly httpUrl: string;
@@ -71,8 +72,8 @@ export function configKeplr(config: AppConfig) {
       average: config.gasPrice,
       high: config.gasPrice * 2,
     },
-    bip44: { coinType: 118 },
-    coinType: 118,
+    bip44: { coinType: config.coinType ?? 118 },
+    coinType: config.coinType ?? 118,
     features: config.keplrFeatures,
   };
 }
