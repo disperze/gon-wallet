@@ -21,7 +21,7 @@ import {
   AppConfig,
   assertTxSuccess,
   configKeplr,
-  createClient,
+  createStargateClient,
   loadKeplrWallet,
   mapEventAttributes,
   useSdk,
@@ -108,7 +108,7 @@ export const IBCTransfer = () => {
       } else {
         const signer = await getKeplrSigner(network);
         sender = (await signer.getAccounts())[0].address;
-        client = await createClient(network, signer);
+        client = await createStargateClient(network, signer);
       }
 
       const ibcChannel = channel || ibcParams.channel;
@@ -238,7 +238,7 @@ export const IBCTransfer = () => {
               <option value='juno'>JUNO</option>
               <option value='stars'>STARGAZE</option>
               <option value='omniflix'>Omniflix</option>
-              {/* <option value='uptick'>Uptick</option> */}
+              <option value='uptick'>Uptick</option>
             </Select>
           </FormControl>
         </Box>
