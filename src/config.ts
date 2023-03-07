@@ -162,7 +162,7 @@ const uptick: AppConfig = {
     coinDecimals: 18,
     coinMinimalDenom: "auptick"
   },
-  gasPrice: 0.025,
+  gasPrice: 25000000000,
   keplrFeatures: ['ibc-transfer', 'eth-address-gen', 'eth-key-sign',],
   channels: [{
     id: "juno",
