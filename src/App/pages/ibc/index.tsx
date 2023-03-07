@@ -183,14 +183,24 @@ export const IBCTransfer = () => {
         if (dstNetwork.keplrFeatures.includes("cosmwasm")) {
           const events = tx.data.value.TxResult.result.events;
           const minterB64 = btoa('minter')
-          const wasm = events.find((e: any) => e.type === "wasm" && e.attributes.some((a: any) => a.key === minterB64))
-          if (!wasm) return;
+          let wasm = events.find((e: any) => e.type === "wasm" && e.attributes.some((a: any) => a.key === minterB64))
+          if (!wasm) {
+             wasm = events.find((e: any) => e.type === "wasm" && e.attributes.some((a: any) => a.key === btoa('action') && a.value === btoa('transfer_nft')))
+          }
           const cw721Contract = atob(wasm.attributes.find((a: any) => a.key === btoa('_contract_address')).value)
+          if (!cw721Contract) return;
+
           setResultClass(cw721Contract);
           setClassId(cw721Contract);
         } else {
-          const traceEvent = tx.events['class_trace.classID'];
-          if (!traceEvent) return;
+          let traceEvent = tx.events['class_trace.classID'];
+          if (!traceEvent) {
+            traceEvent = tx.events['non_fungible_token_packet.classID'];
+            if (!traceEvent) return;
+
+            const parts = traceEvent[0].split("/");
+            traceEvent = [parts.slice(2, parts.length).join('/')];
+          }
           setResultClass(traceEvent[0]);
           setClassId(traceEvent[0]);
         }
@@ -248,7 +258,7 @@ export const IBCTransfer = () => {
               fontSize="sm"
               fontFamily="mono"
               fontWeight="semibold"
-            >{ ['juno', 'stars'].includes(origin??"") ? "Contract:" : "ClassID" }</FormLabel>
+            >{ ['juno', 'stars'].includes(origin??"") ? "Contract" : "ClassID" }</FormLabel>
             <Input
               name="class"
               value={classId}
@@ -328,7 +338,7 @@ export const IBCTransfer = () => {
         <Box mt={6} mb={10}>
           <Heading as="h3" fontSize="3xl">Remote Result</Heading>
           <Text fontSize="md" mt={2}>
-            <strong>{resultClass?.startsWith("ibc/") ? "ClassID" : "Contract"}:</strong>&nbsp;
+            <strong>{['juno', 'stars'].includes(origin??"") ? "Contract" : "ClassID"}:</strong>&nbsp;
             {resultClass}
           </Text>
         </Box>
