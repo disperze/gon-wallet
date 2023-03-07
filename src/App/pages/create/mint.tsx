@@ -113,19 +113,6 @@ export const MintNFT = () => {
         </Box>
         <Box as={'form'} id="nft-form" onSubmit={createNft}>
         <Box mt={4}>
-          <FormControl id="id" isRequired>
-            <FormLabel
-              fontSize="sm"
-              fontFamily="mono"
-              fontWeight="semibold"
-            >ID</FormLabel>
-            <Input
-              name="id"
-              spellCheck={false}
-              onChange={e => setDenom(e.target.value)} />
-          </FormControl>
-        </Box>
-        <Box mt={4}>
           <FormControl id="class" isRequired>
             <FormLabel
               fontSize="sm"
@@ -137,6 +124,19 @@ export const MintNFT = () => {
               value={classId}
               spellCheck={false}
               onChange={e => setClassId(e.target.value)} />
+          </FormControl>
+        </Box>
+        <Box mt={4}>
+          <FormControl id="id" isRequired>
+            <FormLabel
+              fontSize="sm"
+              fontFamily="mono"
+              fontWeight="semibold"
+            >ID</FormLabel>
+            <Input
+              name="id"
+              spellCheck={false}
+              onChange={e => setDenom(e.target.value)} />
           </FormControl>
         </Box>
         <Box mt={4}>
