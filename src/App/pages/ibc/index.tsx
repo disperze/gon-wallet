@@ -203,7 +203,7 @@ export const IBCTransfer = () => {
             const parts = traceEvent[0].split("/");
             const classParts = parts.slice(2, parts.length);
             if (classParts[0] === "nft-transfer" || classParts[0].startsWith("wasm.")) {
-              traceEvent = ["ibc/" + toHex(sha256(classParts.join("/"))).toUpperCase()];
+              traceEvent = ["ibc/" + toHex(sha256(toUtf8(classParts.join("/")))).toUpperCase()];
             } else {
               traceEvent = [classParts.join('/')];
             }
