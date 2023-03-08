@@ -28,7 +28,8 @@ import {
   waitingIbcTransfer,
 } from "../../services";
 import { MsgTransfer } from "../../proto/nft_transfer/tx";
-import { fromBech32, toUtf8, toBase64 } from "@cosmjs/encoding";
+import { fromBech32, toUtf8, toHex, toBase64 } from "@cosmjs/encoding";
+import { sha256 } from "@cosmjs/crypto";
 import { networks } from "../../../config";
 import { MsgExecuteContract } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 
@@ -179,6 +180,7 @@ export const IBCTransfer = () => {
           isClosable: true,
         });
         console.log("RCV TX: ", txHash);
+        console.log(tx);
 
         if (dstNetwork.keplrFeatures.includes("cosmwasm")) {
           const events = tx.data.value.TxResult.result.events;
@@ -199,7 +201,12 @@ export const IBCTransfer = () => {
             if (!traceEvent) return;
 
             const parts = traceEvent[0].split("/");
-            traceEvent = [parts.slice(2, parts.length).join('/')];
+            const classParts = parts.slice(2, parts.length);
+            if (classParts[0] === "nft-transfer" || classParts[0].startsWith("wasm.")) {
+              traceEvent = ["ibc/" + toHex(sha256(classParts.join("/"))).toUpperCase()];
+            } else {
+              traceEvent = [classParts.join('/')];
+            }
           }
           setResultClass(traceEvent[0]);
           setClassId(traceEvent[0]);
