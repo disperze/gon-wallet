@@ -60,7 +60,7 @@ const juno: AppConfig = {
   token: {
     coinDenom: "JUNO",
     coinDecimals: 6,
-    coinMinimalDenom: "ujuno"
+    coinMinimalDenom: "ujunox"
   },
   gasPrice: 0.025,
   keplrFeatures: ['ibc-transfer', 'cosmwasm'],
