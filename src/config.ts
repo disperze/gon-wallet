@@ -70,7 +70,7 @@ const juno: AppConfig = {
     port: "wasm.juno1stv6sk0mvku34fj2mqrlyru6683866n306mfv52tlugtl322zmks26kg7a",
   }, {
     id: "stars",
-    channel: "channel-93",
+    channel: "channel-120",
     port: "wasm.juno1stv6sk0mvku34fj2mqrlyru6683866n306mfv52tlugtl322zmks26kg7a",
   }, {
     id: "uptick",
@@ -103,7 +103,7 @@ const stars: AppConfig = {
     port: "wasm.stars1ve46fjrhcrum94c7d8yc2wsdz8cpuw73503e8qn9r44spr6dw0lsvmvtqh",
   }, {
     id: "juno",
-    channel: "channel-211",
+    channel: "channel-230",
     port: "wasm.stars1ve46fjrhcrum94c7d8yc2wsdz8cpuw73503e8qn9r44spr6dw0lsvmvtqh",
   }, {
     id: "uptick",
