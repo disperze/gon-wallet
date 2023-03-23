@@ -54,8 +54,8 @@ const juno: AppConfig = {
   chainId: "uni-6",
   chainName: "JUNO Testnet",
   addressPrefix: "juno",
-  rpcUrl: "https://rpc.uni.junonetwork.io",
-  httpUrl: "https://api.uni.junonetwork.io",
+  rpcUrl: "https://rpc.juno.giansalex.dev",
+  httpUrl: "https://lcd.juno.giansalex.dev",
   explorerTx: 'https://blueprints.juno.giansalex.dev/#/transactions/',
   token: {
     coinDenom: "JUNO",
