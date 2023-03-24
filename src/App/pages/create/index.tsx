@@ -28,6 +28,7 @@ export const Create = () => {
   const [name, setName]= useState<string>();
   const [symbol, setSymbol]= useState<string>();
   const [data, setData]= useState<string>();
+  const [uri, setUri]= useState<string>();
   const [description, setDescription]= useState<string>();
   const [loading, setLoading] = useBoolean();
 
@@ -66,7 +67,7 @@ export const Create = () => {
           updateRestricted: false,
           sender: address,
           symbol: symbol,
-          uri: "",
+          uri: uri,
           uriHash: ""
         })
       };
@@ -146,6 +147,19 @@ export const Create = () => {
               name="symbol"
               spellCheck={false}
               onChange={e => setSymbol(e.target.value)} />
+          </FormControl>
+        </Box>
+        <Box mt={4}>
+          <FormControl id="uri">
+            <FormLabel
+              fontSize="sm"
+              fontFamily="mono"
+              fontWeight="semibold"
+            >Uri</FormLabel>
+            <Input
+              name="uri"
+              spellCheck={false}
+              onChange={e => setUri(e.target.value)} />
           </FormControl>
         </Box>
         <Box mt={4}>
